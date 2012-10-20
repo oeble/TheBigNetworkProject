@@ -27,13 +27,25 @@ public class RequestID {
 		return racine.getChild("RequestType").getText();
 	}
 	
+	public long getTimeStart() {
+		return Long.parseLong(racine.getChild("TimeStart").getText()); 
+	}
+	
+	public long getTimeStop() {
+		return Long.parseLong(racine.getChild("TimeStop").getText()); 
+	}
+	
+	public int getCellID() {
+		return Integer.parseInt(racine.getChild("CellID").getText()); 
+	}
+	
 	public void createParse(String message) throws Exception
 	{
 		
 		SAXBuilder sxb = new SAXBuilder();
-		document = sxb.build(new StringReader(message));
-		racine = document.getRootElement();
-		System.out.println(racine.getName());
+		this.document = sxb.build(new StringReader(message));
+		this.racine = document.getRootElement();
+		System.out.println(racine.getText());
 	}
 
 	
