@@ -116,12 +116,12 @@ public class CopyOfAutoScaling_BF {
 		
 		if (CREATE_SIMPLE_QUEUE_SERVICE_IN) {
 			// CREATE SQS_IN
-			new SimpleQueueService(SQS_IN_NAME, credentials);
+			new SimpleQueueService(SQS_IN_NAME, credentials, ToDo.Create);
 		}
 		
 		if (CREATE_SIMPLE_QUEUE_SERVICE_OUT) {
 			// CREATE SQS_OUT
-			new SimpleQueueService(SQS_OUT_NAME, credentials);
+			new SimpleQueueService(SQS_OUT_NAME, credentials, ToDo.Create);
 		}
 		
 		if (CREATE_LAUNCH_CONFIGURATION) {
