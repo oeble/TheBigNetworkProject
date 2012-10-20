@@ -64,6 +64,8 @@ class Server {
 			System.out.println("receive request n° " + req.getRacine() + " with type " + requestType );
 			System.out.println("TimeStart " + timeStart + " timeStop " + timeStop + " cellID " + cellID + "\n");
 			
+			message = null;
+			
 			//XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 	        
 	   
