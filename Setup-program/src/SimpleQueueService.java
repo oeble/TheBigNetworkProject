@@ -28,20 +28,22 @@ public class SimpleQueueService {
         SQSC = new AmazonSQSClient(awsCredentials);
 		SQSC.setEndpoint("sqs.eu-west-1.amazonaws.com");
         CreateQueueRequest CSQSReq = new CreateQueueRequest(name);
+	String queueUrl;
 
 		try {
 			System.out.println("Creating SQS..");
-			SQSC.createQueue(CSQSReq);
+			queueUrl = SQSC.createQueue(CSQSReq);
 			System.out.println("SQS created.");
 		} catch (AlreadyExistsException e) {
-			System.out
-					.println("SQS of the same name already exists.");
+			System.out.println("SQS of the same name already exists.");
 		} catch (Exception e) {
 			System.out.print("Error occured while creating SQS!");
 			System.out.println(e.getMessage());
 			System.exit(-1);
 		}
-        
+        	
+		Maps<String,String> attributes;
+            	SQSC.setQueueAttributes(new SetQueueAttributesRequest(queueUrl, attributes));
 
 	}
 }
