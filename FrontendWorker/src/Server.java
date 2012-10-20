@@ -46,8 +46,10 @@ class Server {
 					e3.printStackTrace();
 				}
 				
-				request = req.racine.getChild("RequestType").getText();
-				System.out.println("la requete n° " + req.getRacine() + " est de type " + req.racine.getChild("RequestType").getText());
+				System.out.println("je suis passe ici");
+				request = req.getType();
+				
+				System.out.println("la requete n° " + req.getRacine() + " est de type " + request);
 				
 				/*Process proc=Runtime.getRuntime().exec("rm message.xml");
 				RequestID rep = new RequestID(req.getRacine());

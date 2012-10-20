@@ -1,4 +1,6 @@
 
+import java.io.StringReader;
+
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
 
@@ -6,7 +8,7 @@ import org.jdom2.input.SAXBuilder;
 
 public class RequestID {
 	public static Element racine ;
-	
+	public static Document document;
 
 	public RequestID(int ID) {
 		String text = "" + ID;
@@ -21,17 +23,18 @@ public class RequestID {
 		return racine.getName();
 	}
 	
-
+	public String getType() {
+		return racine.getChild("RequestType").getText();
+	}
 	
 	public void createParse(String message) throws Exception
 	{
 		
 		SAXBuilder sxb = new SAXBuilder();
-		Document document = sxb.build(message);
+		document = sxb.build(new StringReader(message));
 		racine = document.getRootElement();
 		System.out.println(racine.getName());
 	}
-
 
 	
 	/*public void send(Socket sock, Document doc){
