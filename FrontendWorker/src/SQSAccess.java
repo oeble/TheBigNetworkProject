@@ -23,9 +23,8 @@ public class SQSAccess {
 	private static final String SQS_OUT_NAME = "12_LP1_SQS_D7001D_group5_out";
 	
 	private static final Logger LOGGER = Logger.getLogger(SQSAccess.class.getName());
-	
-	AWSCredentials awsCredentials;
-	AmazonSQS sqs;
+
+	static AmazonSQS sqs = null;
 	
 	String sqsInUrl;
 	String sqsOutUrl;
@@ -36,9 +35,11 @@ public class SQSAccess {
 
     public SQSAccess(AWSCredentials pawsCredentials) throws Exception {
 
-    	this.awsCredentials = pawsCredentials;
-    	sqs = new AmazonSQSClient(awsCredentials);
-    	sqs.setEndpoint("sqs.eu-west-1.amazonaws.com");
+    	if(sqs == null)
+    	{
+    		sqs = new AmazonSQSClient(pawsCredentials);
+    		sqs.setEndpoint("sqs.eu-west-1.amazonaws.com");
+    	}
     	
         try {
             // Get the queue
