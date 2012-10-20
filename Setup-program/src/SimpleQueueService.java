@@ -13,26 +13,42 @@
  * permissions and limitations under the License.
  */
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
+
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.autoscaling.model.AlreadyExistsException;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
-
-
+import com.amazonaws.services.sqs.model.DeleteQueueRequest;
+import com.amazonaws.services.sqs.model.GetQueueUrlRequest;
 
 public class SimpleQueueService {
 
 	AmazonSQSClient SQSC;
-	public SimpleQueueService(String name, AWSCredentials awsCredentials) {
-	
-        SQSC = new AmazonSQSClient(awsCredentials);
-		SQSC.setEndpoint("sqs.eu-west-1.amazonaws.com");
-        CreateQueueRequest CSQSReq = new CreateQueueRequest(name);
-	String queueUrl;
 
+	public SimpleQueueService(String name, AWSCredentials awsCredentials,
+			ToDo todo) {
+		SQSC = new AmazonSQSClient(awsCredentials);
+		SQSC.setEndpoint("sqs.eu-west-1.amazonaws.com");
+
+		if (todo == ToDo.Create)
+			CreateSQS(name);
+		//if (todo == ToDo.Delete)
+		//	DeleteSQS(name);
+	}
+
+	public void CreateSQS(String name) {
+		Map<String, String> attributes = null;
+		CreateQueueRequest CSQSReq = new CreateQueueRequest(name);
+		if (attributes != null)
+			CSQSReq.setAttributes(attributes);
 		try {
 			System.out.println("Creating SQS..");
-			queueUrl = SQSC.createQueue(CSQSReq);
 			System.out.println("SQS created.");
 		} catch (AlreadyExistsException e) {
 			System.out.println("SQS of the same name already exists.");
@@ -41,10 +57,29 @@ public class SimpleQueueService {
 			System.out.println(e.getMessage());
 			System.exit(-1);
 		}
-        	
-		Maps<String,String> attributes;
-            	SQSC.setQueueAttributes(new SetQueueAttributesRequest(queueUrl, attributes));
-
 	}
-}
 
+/*	public void DeleteSQS(String name) {
+		GetQueueUrlRequest GQURLReq = new GetQueueUrlRequest();		
+		GQURLReq.setQueueName(name);
+		GQURLReq.setQueueOwnerAWSAccountId("2828-5017-5725");
+		try {
+			System.out.println("Deleting SQS");
+			String URL = SQSC.getQueueUrl(GQURLReq).getQueueUrl();
+			DeleteQueueRequest DQReq = new DeleteQueueRequest(URL);
+			SQSC.deleteQueue(DQReq);
+			System.out.println("SQS deleted.");
+		} catch (AmazonServiceException ase) {
+			System.out.println("Caught an AmazonServiceException");
+			System.out.println("Error Message:    " + ase.getMessage());
+			System.out.println("HTTP Status Code: " + ase.getStatusCode());
+			System.out.println("AWS Error Code:   " + ase.getErrorCode());
+			System.out.println("Error Type:       " + ase.getErrorType());
+			System.out.println("Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println("Caught an AmazonClientException");
+			System.out.println("Error Message: " + ace.getMessage());
+		}
+	}
+	*/
+}
