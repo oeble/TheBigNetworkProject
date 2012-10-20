@@ -1,7 +1,5 @@
-import java.io.*;
-import java.net.*;
+
 import org.jdom2.*;
-import org.jdom2.output.*;
 import org.jdom2.input.SAXBuilder;
 
 
@@ -25,18 +23,18 @@ public class RequestID {
 	
 
 	
-	static void lireFichier(String fichier) throws Exception
+	static void createParse(String message) throws Exception
 	{
 		
 		SAXBuilder sxb = new SAXBuilder();
-		Document document = sxb.build(new File(fichier));
+		Document document = sxb.build(message);
 		racine = document.getRootElement();
 		System.out.println(racine.getName());
 	}
 
 
 	
-	public void send(Socket sock, Document doc){
+	/*public void send(Socket sock, Document doc){
 		try {
 		
 
@@ -54,6 +52,8 @@ public class RequestID {
 		}
 		
 	}
+	*/
+	
 	
 	public static Document createError(String type, String perrorData, String perrorDescription) {
 	
