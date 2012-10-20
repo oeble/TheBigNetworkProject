@@ -20,6 +20,7 @@ public class AutoScaling_WB {
 	private static final boolean CREATE_AUTO_SCALE_GROUP =  false;
 	private static final boolean CREATE_ALARMS =  false;
 	private static final boolean UPDATE_AUTO_SCALE_GROUP = false;
+	
 	private static final boolean DELETE_AUTO_SCALE_GROUP = false;
 	private static final boolean DELETE_LOAD_CONFIGURATION = false;
 
