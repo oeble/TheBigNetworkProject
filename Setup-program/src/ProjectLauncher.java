@@ -8,9 +8,9 @@ public class ProjectLauncher {
 	
 	public static final boolean START_AUTO_SCALING_WB = false;
 	public static final boolean START_AUTO_SCALING_BF = false;
-	public static final boolean START_SQS = true;
+	public static final boolean START_SQS = false;
 	
-	public static final ToDo TODO_DYNAMODB = ToDo.Nothing;
+	public static final ToDo TODO_DYNAMODB = ToDo.Create;
 
 
 	public static void main(String[] Arg){
