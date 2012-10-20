@@ -23,7 +23,7 @@ public class RequestID {
 	
 
 	
-	static void createParse(String message) throws Exception
+	public void createParse(String message) throws Exception
 	{
 		
 		SAXBuilder sxb = new SAXBuilder();
