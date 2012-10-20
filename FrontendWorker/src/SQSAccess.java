@@ -73,6 +73,8 @@ public class SQSAccess {
 	    	// Receive messages
 	        LOGGER.log(Level.INFO,"Receiving messages from the queue\n");
 	        List<Message> messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
+	        if(messages == null || messages.size() == 0)
+	        	return null;
 	        Message message = messages.get(0);
 	        
 	        String logdetails = 	"  Message\n"+
@@ -114,6 +116,7 @@ public class SQSAccess {
 	        
 	        LOGGER.log(Level.FINE,"Delete the request from the queue");
 	        sqs.deleteMessage(new DeleteMessageRequest(sqsInUrl, messageRecieptHandle));
+	        
         } catch (AmazonServiceException ase) {
             LOGGER.log(Level.WARNING,"Caught an AmazonServiceException, which means your request made it " +
                     "to Amazon SQS, but was rejected with an error response for some reason.\n"+
