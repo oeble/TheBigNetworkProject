@@ -125,7 +125,7 @@ public class AutoScaling_BF {
 
 			// Write the ARN to file in case the policies are already created
 			try {
-				FileWriter fstream = new FileWriter("policy_ARN.txt");
+				FileWriter fstream = new FileWriter("policyBF_ARN.txt");
 				BufferedWriter out = new BufferedWriter(fstream);
 				if (!policy_down_ARN.equals(""))
 					out.write(policy_down_ARN + "\n");
@@ -169,7 +169,7 @@ public class AutoScaling_BF {
 
 	public static String[] LoadPolicyUpARN() throws IOException {
 		String[] output = new String[2];
-		InputStream fis = new FileInputStream("policy_ARN.txt");
+		InputStream fis = new FileInputStream("policyBF_ARN.txt");
 		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 		output[0] = br.readLine();
 		output[1] = br.readLine();

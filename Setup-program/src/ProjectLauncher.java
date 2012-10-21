@@ -7,9 +7,13 @@ public class ProjectLauncher {
 	
 	public static final boolean START_AUTO_SCALING_WB = false;
 	public static final boolean START_AUTO_SCALING_BF = false;
+<<<<<<< HEAD
 	public static final boolean START_SQS = true;
 	public static final boolean START_S3 = true;
 	public static final boolean START_DYNAMO_DB = false;
+=======
+	public static final boolean START_SQS = false;
+>>>>>>> some stuff
 	
 	public static final ToDo TODO_DYNAMODB = ToDo.Create;
 
@@ -30,15 +34,21 @@ public class ProjectLauncher {
 		System.out.println("Credentials are fine!");
 		
 		
+		 new DynamoDbLauncher(credentials,TODO_DYNAMODB);
 	     if(START_AUTO_SCALING_WB)
 		 new AutoScaling_WB(credentials);
 	     if(START_AUTO_SCALING_BF)
 		 new AutoScaling_BF(credentials);
 	     if(START_SQS)
 		 new SQS(credentials);
+<<<<<<< HEAD
 	     if(START_DYNAMO_DB)
 	     new DynamoDbLauncher(credentials,TODO_DYNAMODB);
 	     if(START_S3)
 	     new Storage3(credentials);
+=======
+	     
+	   
+>>>>>>> some stuff
 	}
 }

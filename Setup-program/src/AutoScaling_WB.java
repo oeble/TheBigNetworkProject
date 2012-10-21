@@ -17,23 +17,23 @@ public class AutoScaling_WB {
 	private static final boolean CREATE_POLICIES = false;
 	private static final boolean CREATE_LOAD_BALANCER =  false;
 	private static final boolean CREATE_LAUNCH_CONFIGURATION =  false;
-	private static final boolean CREATE_AUTO_SCALE_GROUP =  false;
-	private static final boolean CREATE_ALARMS =  false;
+	private static final boolean CREATE_AUTO_SCALE_GROUP = false;
+	private static final boolean CREATE_ALARMS = false;
 	private static final boolean UPDATE_AUTO_SCALE_GROUP = false;
 	
-	private static final boolean DELETE_AUTO_SCALE_GROUP = false;
-	private static final boolean DELETE_LOAD_CONFIGURATION = false;
+	private static final boolean DELETE_AUTO_SCALE_GROUP = true;
+	private static final boolean DELETE_LOAD_CONFIGURATION = true;
 
 	// AUTO-SCALE SETTINGS
 	private static final boolean USE_ELB = true;
-	private static final int MIN_SIZE = 4;
-	private static final int MAX_SIZE = 10;
+	private static final int MIN_SIZE = 2;
+	private static final int MAX_SIZE = 3;
 	private static final String AUTO_SCALING_GROUP_NAME = "12_LP1_ASG_D7001D_group5_BF";
 	private static final String LAUNCH_CONFIGURATION_NAME = "12_LP1_ASLC_D7001D_group5_BF";
-	private static final String AMI_ID = "ami-eb2b2b9f";
+	private static final String AMI_ID = "ami-8b9e9eff";
 	private static final String SEC_GROUP_NAME = "12_LP1_SEC_D7001D_group5";
 	private static final String KEY_PAIR_NAME = "12_LP1_KEY_D7001D_group5";
-	private static final String INSTANCE_TYPE = "t1.micro";
+	private static final String INSTANCE_TYPE = "c1.medium";
 
 	// LOAD BALANCER SETTINGS
 	private static final String ELB_NAME = "12-LP1-ELB-D7001D-group5";
@@ -125,7 +125,7 @@ public class AutoScaling_WB {
 
 			// Write the ARN to file in case the policies are already created
 			try {
-				FileWriter fstream = new FileWriter("policy_ARN.txt");
+				FileWriter fstream = new FileWriter("policyWB_ARN.txt");
 				BufferedWriter out = new BufferedWriter(fstream);
 				if (!policy_down_ARN.equals(""))
 					out.write(policy_down_ARN + "\n");
@@ -159,7 +159,7 @@ public class AutoScaling_WB {
 		}
 
 		if(UPDATE_AUTO_SCALE_GROUP)
-		asHelper.updateASG(AUTO_SCALING_GROUP_NAME, 1, 4, 60);
+		asHelper.updateASG(AUTO_SCALING_GROUP_NAME, MIN_SIZE, MAX_SIZE, 60);
 		if(DELETE_AUTO_SCALE_GROUP)
 		asHelper.DeleteASG(AUTO_SCALING_GROUP_NAME);
 		if(DELETE_LOAD_CONFIGURATION)
@@ -169,7 +169,7 @@ public class AutoScaling_WB {
 
 	public static String[] LoadPolicyUpARN() throws IOException {
 		String[] output = new String[2];
-		InputStream fis = new FileInputStream("policy_ARN.txt");
+		InputStream fis = new FileInputStream("policyWB_ARN.txt");
 		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 		output[0] = br.readLine();
 		output[1] = br.readLine();

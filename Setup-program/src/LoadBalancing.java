@@ -1,4 +1,6 @@
-
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -23,11 +25,22 @@ public class LoadBalancing {
 				listeners, aZ);
 		try {
 			System.out.println("Creating ELB..");
-			ELBC.createLoadBalancer(CLBReq);
+			String DNSName = ELBC.createLoadBalancer(CLBReq).getDNSName();
+
+			// Write the DNSNAME to file in case the policies are already created
+			try {
+				FileWriter fstream = new FileWriter("LB_DNSNAME.txt");
+				BufferedWriter out = new BufferedWriter(fstream);
+				if (!DNSName.equals(""))
+					out.write(DNSName);
+				out.close();
+			} catch (IOException e) {
+				System.err.println("IOException cant write to file!");
+				e.printStackTrace();
+			}
 			System.out.println("ELB created.");
 		} catch (AlreadyExistsException e) {
-			System.out
-					.println("ELB of the same name allready exists.");
+			System.out.println("ELB of the same name allready exists.");
 		} catch (Exception e) {
 			System.out.print("Error occured while creating ELB!");
 			System.out.println(e.getMessage());
