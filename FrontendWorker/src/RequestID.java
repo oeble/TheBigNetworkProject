@@ -20,16 +20,16 @@ public class RequestID {
 		return racine.getChild("RequestType").getText();
 	}
 	
-	public long getTimeStart() {
-		return Long.parseLong(racine.getChild("TimeStart").getText()); 
+	public String getTimeStart() {
+		return racine.getChild("TimeStart").getText(); 
 	}
 	
-	public long getTimeStop() {
-		return Long.parseLong(racine.getChild("TimeStop").getText()); 
+	public String getTimeStop() {
+		return racine.getChild("TimeStop").getText(); 
 	}
 	
-	public int getCellID() {
-		return Integer.parseInt(racine.getChild("CellID").getText()); 
+	public String getCellID() {
+		return racine.getChild("CellID").getText(); 
 	}
 	
 	public void createParse(String message) throws Exception
