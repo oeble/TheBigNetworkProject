@@ -1,5 +1,6 @@
 
 import java.io.StringReader;
+import java.util.List;
 
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
@@ -112,26 +113,27 @@ public class RequestID {
 	return document;
 	}
 	
-	//TODO: just ask for a list of cell (provide all the cellID)
-	public static Document createReplyListCell( String cellID , String[] listNeighbourCell) {
-	int i ;
+	public static Document createReplyListCell( List<String> cellIdList) {
+	
 	
 	Document document = new Document(racine);
 	Element RequestType = new Element("RequestType");
 	RequestType.setText("ListCell");
 	racine.addContent(RequestType);
 	
-	Element Cell = new Element("Cell");
-	racine.addContent(Cell);
+	for(String cellId : cellIdList) {
+		
+		Element cellElement = new Element("Cell");
+		racine.addContent(cellElement);
+		
+		Element cellIdElement = new Element("CellID");
+		cellIdElement.setText(cellId);
+		cellElement.addContent(cellIdElement);
 	
-	Element CellID = new Element("CellID");
-	CellID.setText(cellID);
-	Cell.addContent(CellID);
 	
-	for(i=0; i < listNeighbourCell.length; i++) {
-		Element Neighbour = new Element("Neighbour");
-		Neighbour.setText(listNeighbourCell[i]);
-		Cell.addContent(Neighbour);
+		//Element Neighbour = new Element("Neighbour");
+		//Neighbour.setText(listNeighbourCell[i]);
+		//Cell.addContent(Neighbour);
 	}
 
 	return document;
