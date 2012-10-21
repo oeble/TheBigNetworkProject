@@ -21,7 +21,7 @@ public class SimpleQueueService {
 			CreateSQS(name);
 		else {
 			System.out.println("Deleting the queue.\n");
-            //TODO.delete !!! SQSC.deleteQueue(new DeleteQueueRequest(new CreateQueueResult()));
+            DeleteSQS(name);
 		}
 		
 	}
@@ -45,10 +45,9 @@ public class SimpleQueueService {
 		}
 	}
 
-/*	public void DeleteSQS(String name) {
+	public void DeleteSQS(String name) {
 		GetQueueUrlRequest GQURLReq = new GetQueueUrlRequest();		
 		GQURLReq.setQueueName(name);
-		GQURLReq.setQueueOwnerAWSAccountId("2828-5017-5725");
 		try {
 			System.out.println("Deleting SQS");
 			String URL = SQSC.getQueueUrl(GQURLReq).getQueueUrl();
@@ -67,5 +66,5 @@ public class SimpleQueueService {
 			System.out.println("Error Message: " + ace.getMessage());
 		}
 	}
-	*/
+	
 }
