@@ -1,24 +1,25 @@
 import java.util.ArrayList;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ProcessAll {
-	final CyclicBarrier barrier;
+
 	private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 	
-	private void Merge() {
+	ProcessAll(ArrayList<CellDirection> CD) {			
+		CountDownLatch latch = new CountDownLatch(CD.size());
 
-	}
-
-	ProcessAll(ArrayList<CellDirection> CD) {
+		for(CellDirection cd: CD)
+		{		
+		  new ProcessOne(cd, latch).start();	  
+		}
 		
-		Runnable merger = new Runnable()
-        {
-            public void run()
-            {
-             //STUFF TO DO WHEN FINISHED
-            }
-        };        
-		barrier = new CyclicBarrier(CD.size(), merger);
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+			LOGGER.log(Level.WARNING, "Latch failed", e);
+		}
+		LOGGER.log(Level.WARNING, "All worker threads are finished");		
 	}
 }

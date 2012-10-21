@@ -10,14 +10,14 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
-*/
-
+ */
 
 /**
  * 
@@ -29,49 +29,60 @@ public class ProcessOne extends Thread {
 	private final static Logger LOGGER = Logger.getLogger(Server.class
 			.getName());
 
-	ArrayList<byte[]> data;
-	
-	public ProcessOne(ArrayList<byte[]> data) {
+	CellDirection data;
+	CountDownLatch latch;
+
+	public ProcessOne(CellDirection data, CountDownLatch latch) {
 		this.data = data;
+		this.latch = latch;
 	}
 
 	@Override
-	public void run() {				
+	public void run() {
 		String response = "";
 		String filename = String.valueOf(Thread.currentThread().getId());
 		String filepaths = "";
-		
-		LOGGER.log(Level.FINE,"Creating files");
-		for(int i = 0;i < data.size(); i++)
-		{		
-		  String name = filename+Integer.toString(i);
-		  filepaths += " /tmp/"+name;
-		  WriteToFile(name, data.get(i));
+        ArrayList<byte[]> rawData = data.getRawData();
+        
+		LOGGER.log(Level.FINE, "Creating files");
+		for (int i = 0; i < rawData.size(); i++) {
+			String name = filename + Integer.toString(i);
+			filepaths += " /tmp/" + name;
+			WriteToFile(name, rawData.get(i));
 		}
 		// Create process builderNBProject
-		String command = "/bin/process64 -f speed -n "+ Integer.toString(data.size())+" "+filepaths; 
-		ProcessBuilder pb = new ProcessBuilder("bash","-c",command);
+		String command = "/bin/process64 -f speed -n "
+				+ Integer.toString(rawData.size()) + " " + filepaths;
+		ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
 		// Merge error and standard output
 		pb.redirectErrorStream(true);
-
+		
 		try {
 			java.lang.Process shell = pb.start();
 			try (InputStream inputStream = shell.getInputStream()) {
 				shell.waitFor();
 				response = StreamToStr(inputStream);
-				LOGGER.log(Level.INFO,"Output of processing is"+response);
+				LOGGER.log(Level.INFO, "Output of processing is" + response);
+				ProcessResponse(response);
+				latch.countDown();
 			}
 		} catch (IOException | InterruptedException e) {
 			response = "Error occured, Error:" + e.getMessage();
-			// Level is WARNING because program will continue working, but this
-			// single command will not be processed
-			LOGGER.log(Level.WARNING,
-					"Error occured, cannot execute", e);
+			LOGGER.log(Level.WARNING, "Error occured, cannot execute", e);
 		}
 		File d = new File("/tmp/" + filename);
-		d.delete();		
+		d.delete();
 	}
 
+	
+	private void ProcessResponse(String response)
+	{
+		String split[] = response.split(" ");	
+		data.setError(!(split[0]=="0"));		
+		data.setSpeeds(split[1], split[2], split[3]);
+	}
+	
+	
 	private void WriteToFile(String name, byte[] data) {
 		try {
 			try (DataOutputStream dos = new DataOutputStream(

@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 public class CellDirection {
 	
+	boolean Error;
 	private String carType;
 	private String minSpeed;
 	private String maxSpeed;
@@ -49,6 +50,11 @@ public class CellDirection {
 		this.minSpeed = min;
 		this.maxSpeed = max;
 		this.averageSpeed = average;
+	}
+	
+	public void setError(boolean Err)
+	{
+	  this.Error = Err;
 	}
 	
 	
