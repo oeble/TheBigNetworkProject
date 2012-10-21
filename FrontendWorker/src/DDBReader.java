@@ -55,7 +55,9 @@ public class DDBReader {
 		try {
 			tbegin = dateFormatter.parse(begin).getTime();
 		} catch (ParseException e) {
+
 			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage());
+
 		}
 
 		try {
@@ -64,9 +66,11 @@ public class DDBReader {
 			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage());
 		}
 
+	
 		// Making request
-		Condition condition = new Condition().withComparisonOperator(ComparisonOperator.BETWEEN).withAttributeValueList(
-				new AttributeValue().withN(tbegin.toString() + "000").withN(tend.toString() + "000"));
+		Condition condition = new Condition().withComparisonOperator(ComparisonOperator.BETWEEN)
+				.withAttributeValueList(
+						 new AttributeValue().withN(tbegin.toString() + "000"), new AttributeValue().withN(tend.toString() + "000"));
 
 		QueryRequest queryRequest = new QueryRequest().withTableName(tableName)
 				.withHashKeyValue(new AttributeValue().withN(cellid.toString())).withRangeKeyCondition(condition)
@@ -80,33 +84,34 @@ public class DDBReader {
 		String numberOfData = result.getCount().toString();
 		String firstType = result.getItems().get(0).get("carType").getN();
 		String firstTime = result.getItems().get(0).get("timestamp").getN();
-		
+
 		// remove the 3 last digit (nodeid)
 		firstTime = firstTime.substring(0, firstTime.length() - 4);
-		
+
 		firstTime = dateFormatter.format(new Date(Long.parseLong(firstTime)));
 		String lastType = result.getItems().get(result.getCount() - 1).get("carType").getN();
 		String lastTime = result.getItems().get(result.getCount() - 1).get("timestamp").getN();
-		
+
 		// remove the 3 last digit (nodeid)
 		lastTime = firstTime.substring(0, lastTime.length() - 4);
-		
-		
+
 		lastTime = dateFormatter.format(new Date(Long.parseLong(lastTime)));
 		Long rawDataSize = 0L;
 		for (Map<String, AttributeValue> item : result.getItems()) {
-			rawDataSize += item.get("data").getS().length();
+			rawDataSize += item.get("data").getB().array().length;
 		}
+
 		return RequestID.createReplyCellStatNet(reqId, cellid, begin, end, firstType, firstTime, lastType, lastTime, numberOfData,
 				String.valueOf((rawDataSize / 1024) / 1024));
+
 	}
 
 	// list of cells
 	public Document reqListCells(String reqId) {
 
 		// hack for the cellIds
-		QueryRequest queryRequest = new QueryRequest().withTableName(tableName).withHashKeyValue(new AttributeValue().withN("-1"))
-				.withAttributesToGet(Arrays.asList("timestamp"));
+		QueryRequest queryRequest = new QueryRequest().withTableName(tableName)
+				.withHashKeyValue(new AttributeValue().withN("-1")).withAttributesToGet(Arrays.asList("timestamp"));
 		QueryResult result = dynamoDB.query(queryRequest);
 
 		List<String> cellIdsList = new LinkedList<String>();
@@ -127,7 +132,9 @@ public class DDBReader {
 		try {
 			tbegin = dateFormatter.parse(begin).getTime();
 		} catch (ParseException e) {
+
 			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage());
+
 		}
 
 		try {
@@ -136,9 +143,12 @@ public class DDBReader {
 			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage());
 		}
 
+		
+
 		// Making request
-		Condition condition = new Condition().withComparisonOperator(ComparisonOperator.BETWEEN).withAttributeValueList(
-				new AttributeValue().withN(tbegin.toString() + "000").withN(tend.toString() + "000"));
+		Condition condition = new Condition().withComparisonOperator(ComparisonOperator.BETWEEN)
+				.withAttributeValueList(
+						new AttributeValue().withN(tbegin.toString() + "000"), new AttributeValue().withN(tend.toString() + "000"));
 
 		QueryRequest queryRequest = new QueryRequest().withTableName(tableName)
 				.withHashKeyValue(new AttributeValue().withN(cellid.toString())).withRangeKeyCondition(condition)
