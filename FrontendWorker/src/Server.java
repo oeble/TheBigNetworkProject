@@ -1,10 +1,7 @@
 import java.io.*;
-import java.net.*;
-import org.jdom2.*;
-import org.jdom2.output.*;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
-import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
+
 
 class Server {
 	
@@ -53,7 +50,7 @@ class Server {
 			try{
 			req.createParse(message);
 			}catch(Exception e3){
-				e3.printStackTrace();
+				System.out.println("Error parsing XML file");
 			}
 			
 			requestType = req.getType();
