@@ -173,7 +173,11 @@ public class DDBReader {
 
 		ArrayList<CellDirection> toCompute1 = new ArrayList<CellDirection>(listSpeedside1.values());
 		ArrayList<CellDirection> toCompute2 = new ArrayList<CellDirection>(listSpeedside2.values());
-
+		
+		new ProcessAll(toCompute2);
+		new ProcessAll(toCompute1);
+		
+		
 		return RequestID.createReplyCellStatSpeed(reqId, cellid, begin, end, toCompute1, toCompute2).toString();
 	}
 
