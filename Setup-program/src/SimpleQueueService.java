@@ -52,6 +52,7 @@ public class SimpleQueueService {
 			CSQSReq.setAttributes(attributes);
 		try {
 			System.out.println("Creating SQS..");
+			SQSC.createQueue(CSQSReq);
 			System.out.println("SQS created.");
 		} catch (AlreadyExistsException e) {
 			System.out.println("SQS of the same name already exists.");
