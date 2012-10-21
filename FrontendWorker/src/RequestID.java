@@ -89,7 +89,7 @@ public class RequestID {
 	return document;
 	}
 	
-	//TODO: I don't understand how to use it.
+	
 	public static Document createReplyCellStatSpeed(String requestId, String cellID , String timeStart , String timeStop,
 			List<CellDirection> directionAList, List<CellDirection> directionBList) {
 	

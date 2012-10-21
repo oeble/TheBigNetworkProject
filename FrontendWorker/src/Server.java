@@ -14,7 +14,7 @@ class Server {
 	public static void main(String[] Arg) {
 		
 		String message = null;
-		String requestType;
+		String requestId, requestType;
 		long timeStart,timeStop;
 		int cellID;
 		
@@ -53,12 +53,13 @@ class Server {
 				System.out.println("Error parsing XML file");
 			}
 			
+			requestId = req.getRacine();
 			requestType = req.getType();
 			timeStart = req.getTimeStart();
 			timeStop = req.getTimeStop();
 			cellID = req.getCellID();
 			
-			System.out.println("receive request n° " + req.getRacine() + " with type " + requestType );
+			System.out.println("receive request n° " + requestId + " with type " + requestType );
 			System.out.println("TimeStart " + timeStart + " timeStop " + timeStop + " cellID " + cellID + "\n");
 			
 			message = null;

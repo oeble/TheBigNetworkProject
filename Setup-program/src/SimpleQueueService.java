@@ -24,6 +24,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.autoscaling.model.AlreadyExistsException;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
+import com.amazonaws.services.sqs.model.CreateQueueResult;
 import com.amazonaws.services.sqs.model.DeleteQueueRequest;
 import com.amazonaws.services.sqs.model.GetQueueUrlRequest;
 
@@ -31,15 +32,17 @@ public class SimpleQueueService {
 
 	AmazonSQSClient SQSC;
 
-	public SimpleQueueService(String name, AWSCredentials awsCredentials,
-			ToDo todo) {
+	public SimpleQueueService(String name, AWSCredentials awsCredentials,boolean create) {
 		SQSC = new AmazonSQSClient(awsCredentials);
 		SQSC.setEndpoint("sqs.eu-west-1.amazonaws.com");
 
-		if (todo == ToDo.Create)
+		if (create)
 			CreateSQS(name);
-		//if (todo == ToDo.Delete)
-		//	DeleteSQS(name);
+		else {
+			System.out.println("Deleting the queue.\n");
+            //TODO.delete !!! SQSC.deleteQueue(new DeleteQueueRequest(new CreateQueueResult()));
+		}
+		
 	}
 
 	public void CreateSQS(String name) {
