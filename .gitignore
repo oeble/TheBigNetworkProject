@@ -167,3 +167,6 @@ pip-log.txt
 AwsCredentials.properties
 
 
+/Test/src/S3TransferProgressSample.java
+/FrontendWorker/src/SimpleQueueServiceSample.java
+/FrontendWorker/src/AmazonDynamoDBSample.java

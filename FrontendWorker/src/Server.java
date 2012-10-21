@@ -1,12 +1,27 @@
 import java.io.*;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
+import java.net.*;
+import org.jdom2.*;
+import org.jdom2.output.*;
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.PropertiesCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+
 
 
 class Server {
-	
-	
 	public static SQSAccess queue;
+	public static S3Access s3;
 	public static AWSCredentials credentials;
 	public static File file = new File("src/AwsCredentials.properties");
 	
@@ -22,14 +37,15 @@ class Server {
 		try {
 			credentials = new PropertiesCredentials(file);
 		} catch (IOException e1) {
-			System.out
-					.println("Credentials were not properly entered into AwsCredentials.properties.");
+			System.out.println("Credentials were not properly entered into AwsCredentials.properties.");
 			System.out.println(e1.getMessage());
 			System.exit(-1);
 		}
 		System.out.println("Credentials are fine!");
+		
 		try {
 		queue = new SQSAccess(credentials);
+		s3 = new S3Access(credentials);
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
@@ -64,21 +80,22 @@ class Server {
 			
 			message = null;
 			
-			//XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 	        
 	   
-			/*RequestID ans = new RequestID(req.getRacine());
+			
 								
 				if(requestType.equals("CellStatNet")) {
-					Document doc1 = ans.createReplyCellStatNet("ID555","Start12345","Stop6789","Citroen","Stamp123456","Volvos","Stam9876","18voitures","1000Mo");
+					Document doc1 = RequestID.createReplyCellStatNet(requestId, "ID555","Start12345","Stop6789","Citroen","Stamp123456","Volvos","Stam9876","18voitures","1000Mo");
 					String xmlString = outputter.outputString(doc1);
-					queue.sendAnswer(xmlString);
+					String location = s3.uploadBucket(requestId + ".xml", new ByteArrayInputStream(xmlString.getBytes()));
+					queue.sendAnswer(location);
 				}
-				else if (requestType.equals("CellStatSpeed")) {
+				/*else if (requestType.equals("CellStatSpeed")) {
 					
 					String[][] reply={{"Cell1111","volvo","min30","max60","moy45","citroen","min60","max120",null},{"Cell2","citroen","min60","max120","moy90"}}; 
 					Document doc2 = ans.createReplyCellStatSpeed("UnCellIDParmisDautre","timestartttt","timedestopppp",reply);
-					String xmlString = outputter.outputString(doc2);
+					String xmlString = outputter.outputString(doc2); 
 					queue.sendAnswer(xmlString);
 				}											
 				else if( requestType.equals("ListCells")) {
@@ -86,10 +103,10 @@ class Server {
 					Document doc3 = ans.createReplyListCell("ID666",neighbour);
 					String xmlString = outputter.outputString(doc3);
 					queue.sendAnswer(xmlString);
-				}											
+				}*/											
 
 			
-			*/
+			
 			
 			
 			
