@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2012-10-21T20:18:30</date>
+  <millis>1350843510120</millis>
+  <sequence>17</sequence>
+  <logger>backendtowsn.BackEndToWSN</logger>
+  <level>INFO</level>
+  <class>backendtowsn.BackEndToWSN</class>
+  <method>main</method>
+  <thread>1</thread>
+  <message>Listening on port: 9,595</message>
+</record>
+</log>
