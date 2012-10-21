@@ -3,14 +3,16 @@
  */
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodb.model.AttributeValue;
@@ -34,27 +36,6 @@ public class DDBReader {
     	if(dynamoDB==null)
     		dynamoDB = new AmazonDynamoDBClient(pawsCredentials);
     	dateFormatter = new SimpleDateFormat("yyyyMMddHHmm");
-    	
-    	//TODO : decide to remove this
-        try {
-        	
-            // Wait for it to become active
-            //waitForTableToBecomeAvailable(tableName);
-
-        } catch (AmazonServiceException ase) {
-            LOGGER.log(Level.WARNING,"Caught an AmazonServiceException, which means your request made it " +
-                    "to Amazon SQS, but was rejected with an error response for some reason.\n"+
-            		"Error Message:    " + ase.getMessage() + "\n" +
-            		"HTTP Status Code: " + ase.getStatusCode() + "\n" +
-            		"AWS Error Code:   " + ase.getErrorCode() + "\n" +
-            		"Error Type:       " + ase.getErrorType() + "\n" +
-            		"Request ID:       " + ase.getRequestId());
-        } catch (AmazonClientException ace) {
-        	LOGGER.log(Level.SEVERE,"Caught an AmazonClientException, which means the client encountered " +
-                    "a serious internal problem while trying to communicate with SQS, such as not " +
-                    "being able to access the network.\n" +
-                    "Error Message: " + ace.getMessage());
-        }
     }
     
     //first car type + timestamp
@@ -82,7 +63,7 @@ public class DDBReader {
     	
 		//Making request
         Condition condition = new Condition().withComparisonOperator(ComparisonOperator.BETWEEN)
-        		.withAttributeValueList(new AttributeValue().withN(tbegin.toString()).withN(tend.toString()));
+        		.withAttributeValueList(new AttributeValue().withN(tbegin.toString()+"000").withN(tend.toString()+"000"));
         
         QueryRequest queryRequest = new QueryRequest().withTableName(tableName)
                 .withHashKeyValue(new AttributeValue().withN(cellid.toString()))
@@ -97,53 +78,106 @@ public class DDBReader {
         String 	numberOfData = result.getCount().toString();
         String 	firstType = result.getItems().get(0).get("carType").getN();
         String 	firstTime = result.getItems().get(0).get("timestamp").getN();
+        firstTime = firstTime.substring(0, firstTime.length()-4);//remove the 3 last digit (nodeid)
         firstTime = dateFormatter.format(new Date(Long.parseLong(firstTime)));
         String 	lastType  = result.getItems().get(result.getCount()-1).get("carType").getN();
         String	lastTime  = result.getItems().get(result.getCount()-1).get("timestamp").getN();
+        lastTime = firstTime.substring(0, lastTime.length()-4);//remove the 3 last digit (nodeid)
         lastTime = dateFormatter.format(new Date(Long.parseLong(lastTime)));
         Long	rawDataSize = 0L;
         for(Map<String,AttributeValue> item : result.getItems())
         {
         	rawDataSize += item.get("data").getS().length();
         }
-        return RequestID.createReplyCellStatNet(cellid , begin , end, firstType, 
+        return RequestID.createReplyCellStatNet(reqId, cellid , begin , end, firstType, 
         		firstTime, lastType, lastTime, numberOfData, String.valueOf((rawDataSize/1024)/1024)).toString();
     }
     
     //list of cells
-    public String Listreqlistcell()    {
+    public String reqListCells(String reqId)    {
     	
-    	//TODO:fill this
-    	return RequestID.createReplyListCell(null, null).toString();
+    	//hack for the cellIds
+    	QueryRequest queryRequest = new QueryRequest().withTableName(tableName)
+                .withHashKeyValue(new AttributeValue().withN("-1"))
+                .withAttributesToGet(Arrays.asList("timestamp"));  
+    	QueryResult result = dynamoDB.query(queryRequest);
+    	
+    	List<String> cellIdsList = new LinkedList<String>();
+    	for(Map<String,AttributeValue> item : result.getItems())
+    	{
+    		cellIdsList.add( item.get("timestamp").getN() );
+    	}
+    	return RequestID.createReplyListCell(reqId, cellIdsList).toString();
     }
     
     //all the informations in the range
-    public String reqCellStatSpeed(String begin, String end, String cellid) {
+    public String reqCellStatSpeed(String reqId, String begin, String end, String cellid) {
     	
-    	//TODO:fill this
-    	return null;//RequestID.createReplyCellStatSpeed(cellid, timeStart, timeStop, listSpeed)
+    	//Dealing with date formating
+    	Long tbegin;
+    	Long tend;
+    	
+    	//TODO : split parsing code to a specialized function
+		try {
+			tbegin = dateFormatter.parse(begin).getTime();
+		} catch (ParseException e) {
+			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage()).toString();
+		}
+		
+		try {
+			tend = dateFormatter.parse(end).getTime();
+		} catch (ParseException e) {
+			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage()).toString();
+		}
+		
+		//Making request
+        Condition condition = new Condition().withComparisonOperator(ComparisonOperator.BETWEEN)
+        		.withAttributeValueList(new AttributeValue().withN(tbegin.toString()+"000").withN(tend.toString()+"000"));
+        
+        QueryRequest queryRequest = new QueryRequest().withTableName(tableName)
+                .withHashKeyValue(new AttributeValue().withN(cellid.toString()))
+                .withRangeKeyCondition(condition)
+                .withAttributesToGet(Arrays.asList("flags", "carType", "data"));   
+        
+        QueryResult result = dynamoDB.query(queryRequest);
+        LOGGER.log(Level.INFO,"Result from request : " + result);
+    	
+        Map<String,CellDirection> listSpeedside1 = new HashMap<String,CellDirection>();
+        Map<String,CellDirection> listSpeedside2 = new HashMap<String,CellDirection>();
+        for(Map<String,AttributeValue> item : result.getItems())
+    	{
+    		if(item.get("flags").getB().get() == 0)
+    		{
+    			CellDirection cd = listSpeedside1.get(item.get("carType").getN());
+    			if(cd == null)
+    			{
+    				cd = new CellDirection(item.get("carType").getN());
+    				listSpeedside1.put(item.get("carType").getN(),cd);
+    			}
+    			cd.addRawData(item.get("data").getB().array());
+    		}
+    		else
+    		{
+    			CellDirection cd = listSpeedside2.get(item.get("carType").getN());
+    			if(cd == null)
+    			{
+    				cd = new CellDirection(item.get("carType").getN());
+    				listSpeedside2.put(item.get("carType").getN(),cd);
+    			}
+    			cd.addRawData(item.get("data").getB().array());
+    		}
+    	}
+    	
+        ArrayList<CellDirection> toCompute1 = new ArrayList<CellDirection>(listSpeedside1.values());
+        ArrayList<CellDirection> toCompute2 = new ArrayList<CellDirection>(listSpeedside2.values());
+    	
+    	return RequestID.createReplyCellStatSpeed(reqId,
+    			cellid,
+    			begin,
+    			end,
+    			toCompute1,
+    			toCompute2)
+    			.toString();
     }
-
-    //TODO:decide to remove this :
-   /* private static void waitForTableToBecomeAvailable(String tableName) {
-        System.out.println("Waiting for " + tableName + " to become ACTIVE...");
-
-        long startTime = System.currentTimeMillis();
-        long endTime = startTime + (10 * 60 * 1000);
-        while (System.currentTimeMillis() < endTime) {
-            try {Thread.sleep(1000 * 20);} catch (Exception e) {}
-            try {
-                DescribeTableRequest request = new DescribeTableRequest().withTableName(tableName);
-                TableDescription tableDescription = dynamoDB.describeTable(request).getTable();
-                String tableStatus = tableDescription.getTableStatus();
-                System.out.println("  - current state: " + tableStatus);
-                if (tableStatus.equals(TableStatus.ACTIVE.toString())) return;
-            } catch (AmazonServiceException ase) {
-                if (ase.getErrorCode().equalsIgnoreCase("ResourceNotFoundException") == false) throw ase;
-            }
-        }
-
-        throw new RuntimeException("Table " + tableName + " never went active");
-    }*/
-
+    
 }
