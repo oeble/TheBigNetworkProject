@@ -1,9 +1,12 @@
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 
 
@@ -65,8 +68,8 @@ public class RequestID {
 	public static Document createReplyListCell(String requestId, List<String> cellIdList ) {
 	
 	racine = new Element(requestId);
-		
 	Document document = new Document(racine);
+	
 	Element RequestType = new Element("RequestType");
 	RequestType.setText("ListCell");
 	racine.addContent(RequestType);
@@ -80,13 +83,10 @@ public class RequestID {
 		cellIdElement.setText(cellId);
 		cellElement.addContent(cellIdElement);
 	
-	
-		//Element Neighbour = new Element("Neighbour");
-		//Neighbour.setText(listNeighbourCell[i]);
-		//Cell.addContent(Neighbour);
 	}
 
 	return document;
+	
 	}
 	
 	

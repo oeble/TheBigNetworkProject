@@ -1,7 +1,10 @@
 import java.io.*;
+
+import org.jdom2.Document;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+
 import com.amazonaws.auth.AWSCredentials;
-import org.jdom2.*;
-import org.jdom2.output.*;
 import com.amazonaws.auth.PropertiesCredentials;
 
 
@@ -16,7 +19,7 @@ class Server {
 		String message = null;
 		String requestId, requestType,timeStart,timeStop,cellID,location;
 		String xmlString = null;
-		
+		Document doc = null;
 		SQSAccess queue = null;
 		S3Access s3 = null;
 		DDBReader ddbRead = null;
@@ -42,30 +45,30 @@ class Server {
 		}
 		
 		
-		while (true) {
+		//while (true) {
 		message = null;
 	 	
-		while(message == null)
-	 	{
-			message = queue.getXML();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-	 	}
-			RequestID req = new RequestID();
-			try{
-			req.createParse(message);
-			}catch(Exception e3){
-				System.out.println("Error parsing XML file");
-			}
+		//while(message == null)
+	 	//{
+			//message = queue.getXML();
+			//try {
+				//Thread.sleep(1000);
+			//} catch (InterruptedException e) {
+			//	e.printStackTrace();
+			//}
+	 	//}
+			//RequestID req = new RequestID();
+			//try{
+			//req.createParse(message);
+			//}catch(Exception e3){
+			//	System.out.println("Error parsing XML file");
+			//}
 			
-			requestId = req.getRacine();
-			requestType = req.getType();
-			timeStart = req.getTimeStart();
-			timeStop = req.getTimeStop();
-			cellID = req.getCellID();
+			requestId = "RequestID80";
+			requestType = "CellStatNet";
+			timeStart = "201210210000";
+			timeStop = "201210252459";
+			cellID = "10";
 			
 			System.out.println("receive request n° " + requestId + " with type " + requestType );
 			System.out.println("TimeStart " + timeStart + " timeStop " + timeStop + " cellID " + cellID + "\n");
@@ -73,21 +76,22 @@ class Server {
 			
 	
 				if(requestType.equals("CellStatNet")) {
-					xmlString = ddbRead.reqCellStatNet(requestId, timeStart, timeStop, cellID);
+					doc = ddbRead.reqCellStatNet(requestId, timeStart, timeStop, cellID);
 				}
 				else if (requestType.equals("CellStatSpeed")) {
 					
-					xmlString = ddbRead.reqCellStatSpeed(requestId, timeStart, timeStop, cellID);
+					doc = ddbRead.reqCellStatSpeed(requestId, timeStart, timeStop, cellID);
 				}											
 				else if( requestType.equals("ListCells")) {
-					xmlString = ddbRead.reqListCells(requestId);
-				}										
-
+					doc = ddbRead.reqListCells(requestId);
+				}			
+				XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+		        xmlString = outputter.outputString(doc);
 				location = s3.uploadBucket(requestId + ".xml", new ByteArrayInputStream(xmlString.getBytes()));
-				queue.sendAnswer(location);
+				//queue.sendAnswer(location);
 			
 			}
-		}
+		//}
 		
 	
 	}
