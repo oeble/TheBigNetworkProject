@@ -8,19 +8,20 @@ import com.amazonaws.auth.PropertiesCredentials;
 
 
 class Server {
-	public static SQSAccess queue;
-	public static S3Access s3;
-	public static AWSCredentials credentials;
-	public static File file = new File("src/AwsCredentials.properties");
+
 	
 	
 	public static void main(String[] Arg) {
 		
 		String message = null;
-		String requestId, requestType;
-		long timeStart,timeStop;
-		int cellID;
+		String requestId, requestType,timeStart,timeStop,cellID,location;
+		String xmlString = null;
 		
+		SQSAccess queue = null;
+		S3Access s3 = null;
+		DDBReader ddbRead = null;
+		AWSCredentials credentials = null;
+		File file = new File("src/AwsCredentials.properties");
 		
 		try {
 			credentials = new PropertiesCredentials(file);
@@ -34,14 +35,17 @@ class Server {
 		try {
 		queue = new SQSAccess(credentials);
 		s3 = new S3Access(credentials);
+		ddbRead = new DDBReader(credentials);
+		
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
 		
 		
 		while (true) {
-				
-	 	while(message == null)
+		message = null;
+	 	
+		while(message == null)
 	 	{
 			message = queue.getXML();
 			try {
@@ -66,38 +70,21 @@ class Server {
 			System.out.println("receive request n° " + requestId + " with type " + requestType );
 			System.out.println("TimeStart " + timeStart + " timeStop " + timeStop + " cellID " + cellID + "\n");
 			
-			message = null;
 			
-			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-	        
-	   
-			
-								
+	
 				if(requestType.equals("CellStatNet")) {
-					Document doc1 = RequestID.createReplyCellStatNet(requestId, "ID555","Start12345","Stop6789","Citroen","Stamp123456","Volvos","Stam9876","18voitures","1000Mo");
-					String xmlString = outputter.outputString(doc1);
-					String location = s3.uploadBucket(requestId + ".xml", new ByteArrayInputStream(xmlString.getBytes()));
-					queue.sendAnswer(location);
+					xmlString = ddbRead.reqCellStatNet(requestId, timeStart, timeStop, cellID);
 				}
-				/*else if (requestType.equals("CellStatSpeed")) {
+				else if (requestType.equals("CellStatSpeed")) {
 					
-					String[][] reply={{"Cell1111","volvo","min30","max60","moy45","citroen","min60","max120",null},{"Cell2","citroen","min60","max120","moy90"}}; 
-					Document doc2 = ans.createReplyCellStatSpeed("UnCellIDParmisDautre","timestartttt","timedestopppp",reply);
-					String xmlString = outputter.outputString(doc2); 
-					queue.sendAnswer(xmlString);
+					xmlString = ddbRead.reqCellStatSpeed(requestId, timeStart, timeStop, cellID);
 				}											
 				else if( requestType.equals("ListCells")) {
-					String[] neighbour={"voisin0","voisin1","voisin2","voisin3","voisin4","voisin5"};
-					Document doc3 = ans.createReplyListCell("ID666",neighbour);
-					String xmlString = outputter.outputString(doc3);
-					queue.sendAnswer(xmlString);
-				}*/											
+					xmlString = ddbRead.reqListCells(requestId);
+				}										
 
-			
-			
-			
-			
-			
+				location = s3.uploadBucket(requestId + ".xml", new ByteArrayInputStream(xmlString.getBytes()));
+				queue.sendAnswer(location);
 			
 			}
 		}
