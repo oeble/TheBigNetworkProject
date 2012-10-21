@@ -16,7 +16,10 @@ class Server {
 	
 	public static void main(String[] Arg) {
 		
-		String message,request;
+		String message = null;
+		String requestType;
+		long timeStart,timeStop;
+		int cellID;
 		
 		
 		try {
@@ -35,47 +38,65 @@ class Server {
 		}
 		
 		
-		//while (true) {
+		while (true) {
 				
-				message = queue.getXML();
-				
-				RequestID req = new RequestID("init");
-				try{
-				req.createParse(message);
-				}catch(Exception e3){
-					e3.printStackTrace();
-				}
-				
-				request = req.racine.getChild("RequestType").getText();
-				System.out.println("la requete n° " + req.getRacine() + " est de type " + req.racine.getChild("RequestType").getText());
-				
-				/*Process proc=Runtime.getRuntime().exec("rm message.xml");
-				RequestID rep = new RequestID(req.getRacine());
-				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-				
-								
-					if(request.equals("CellStatNet")) {
-						Document docu = rep.createReplyCellStatNet("ID555","Start12345","Stop6789","Citroen","Stamp123456","Volvos","Stam9876","18voitures","1000Mo");
-						
-					}
-					else if (request.equals("CellStatSpeed")) {
-						System.out.println("je suis laaaaaaaaaaaaa");
-						String[][] reply={{"Cell1111","volvo","min30","max60","moy45","citroen","min60","max120",null},{"Cell2","citroen","min60","max120","moy90"}}; 
-						Document doc = rep.createReplyCellStatSpeed("UnCellIDParmisDautre","timestartttt","timedestopppp",reply);
-						sortie.output(doc, System.out);
-						rep.send(socket,doc);
-					}											
-					else if( request.equals("ListCells")) {
-						String[] neighbour={"voisin0","voisin1","voisin2","voisin3","voisin4","voisin5"};
-						Document re = rep.createReplyListCell("ID666",neighbour);
-					}											
-
-				
-				
-				return;
-				
-				*/
+	 	while(message == null)
+	 	{
+			message = queue.getXML();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+	 	}
+			RequestID req = new RequestID("init");
+			try{
+			req.createParse(message);
+			}catch(Exception e3){
+				e3.printStackTrace();
+			}
 			
+			requestType = req.getType();
+			timeStart = req.getTimeStart();
+			timeStop = req.getTimeStop();
+			cellID = req.getCellID();
+			
+			System.out.println("receive request n° " + req.getRacine() + " with type " + requestType );
+			System.out.println("TimeStart " + timeStart + " timeStop " + timeStop + " cellID " + cellID + "\n");
+			
+			message = null;
+			
+			//XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+	        
+	   
+			/*RequestID ans = new RequestID(req.getRacine());
+								
+				if(requestType.equals("CellStatNet")) {
+					Document doc1 = ans.createReplyCellStatNet("ID555","Start12345","Stop6789","Citroen","Stamp123456","Volvos","Stam9876","18voitures","1000Mo");
+					String xmlString = outputter.outputString(doc1);
+					queue.sendAnswer(xmlString);
+				}
+				else if (requestType.equals("CellStatSpeed")) {
+					
+					String[][] reply={{"Cell1111","volvo","min30","max60","moy45","citroen","min60","max120",null},{"Cell2","citroen","min60","max120","moy90"}}; 
+					Document doc2 = ans.createReplyCellStatSpeed("UnCellIDParmisDautre","timestartttt","timedestopppp",reply);
+					String xmlString = outputter.outputString(doc2);
+					queue.sendAnswer(xmlString);
+				}											
+				else if( requestType.equals("ListCells")) {
+					String[] neighbour={"voisin0","voisin1","voisin2","voisin3","voisin4","voisin5"};
+					Document doc3 = ans.createReplyListCell("ID666",neighbour);
+					String xmlString = outputter.outputString(doc3);
+					queue.sendAnswer(xmlString);
+				}											
+
+			
+			*/
+			
+			
+			
+			
+			}
 		}
 		
 	
