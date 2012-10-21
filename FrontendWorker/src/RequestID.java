@@ -11,14 +11,6 @@ public class RequestID {
 	public static Element racine ;
 	public static Document document;
 
-	public RequestID(int ID) {
-		String text = "" + ID;
-		racine = new Element("RequestID" + text);
-	}
-	
-	public RequestID(String ID) {
-		racine = new Element(ID);
-	}
 	
 	public String getRacine() {
 		return racine.getName();
@@ -44,32 +36,10 @@ public class RequestID {
 	{
 		
 		SAXBuilder sxb = new SAXBuilder();
-		this.document = sxb.build(new StringReader(message));
-		this.racine = document.getRootElement();
+		document = sxb.build(new StringReader(message));
+		racine = document.getRootElement();
 		System.out.println(racine.getText());
-	}
-
-	
-	/*public void send(Socket sock, Document doc){
-		try {
-		
-
-		PrintWriter out = new PrintWriter(sock.getOutputStream());
-		XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-		sortie.output(doc, out);
-		out.print("\r\n\r\n"+(char)-1 + "\n\n");
-		out.flush();
-
-		//out.close();
-		
-		
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	*/
-	
+	}	
 	
 	public static Document createError(String type, String perrorData, String perrorDescription) {
 	
@@ -91,31 +61,11 @@ public class RequestID {
 	return document;
 	}
 	
-	public static Document createRequest(String type, String timeStart, String timeStop, String cellID) {
 	
-	Document document = new Document(racine);
-	Element RequestType = new Element("RequestType");
-	RequestType.setText(type);
-	racine.addContent(RequestType);
+	public static Document createReplyListCell(String requestId, List<String> cellIdList ) {
 	
-	Element TimeStart = new Element("TimeStart");
-	TimeStart.setText(timeStart);
-	racine.addContent(TimeStart);
-	
-	Element TimeStop = new Element("TimeStop");
-	TimeStop.setText(timeStop);
-	racine.addContent(TimeStop);
-	
-	Element CellID = new Element("CellID");
-	CellID.setText(cellID);
-	racine.addContent(CellID);
-
-	return document;
-	}
-	
-	public static Document createReplyListCell( List<String> cellIdList) {
-	
-	
+	racine = new Element(requestId);
+		
 	Document document = new Document(racine);
 	Element RequestType = new Element("RequestType");
 	RequestType.setText("ListCell");
@@ -140,9 +90,11 @@ public class RequestID {
 	}
 	
 	//TODO: I don't understand how to use it.
-	public static Document createReplyCellStatSpeed( String cellID , String timeStart , String timeStop, String[][] listSpeed) {
-	int i,j ; 
+	public static Document createReplyCellStatSpeed(String requestId, String cellID , String timeStart , String timeStop,
+			List<CellDirection> directionAList, List<CellDirection> directionBList) {
 	
+	
+	racine = new Element(requestId);
 	Document document = new Document(racine);
 	Element RequestType = new Element("RequestType");
 	RequestType.setText("CellStatSpeed");
@@ -162,38 +114,59 @@ public class RequestID {
 	Element TimeStop = new Element("TimeStop");
 	TimeStop.setText(timeStop);
 	Cell.addContent(TimeStop);
-	for(i = 0; i < listSpeed.length; i++)
-	{
-		Element DirectionCellID = new Element("DirectionCell" + listSpeed[i][0]);
-		Cell.addContent(DirectionCellID);
+	
+	Element DirectionCellID = new Element("Direction" + cellID +"A");
+	Cell.addContent(DirectionCellID);
+	
+	for(CellDirection cellDirectionElement : directionAList) {
+			
+		Element CarType = new Element(cellDirectionElement.getCarType());
+		DirectionCellID.addContent(CarType);
 		
-		for(j=0; j < listSpeed[i].length/4; j++) {
-				
-			Element CarType = new Element(listSpeed[i][4*j+1]);
-			DirectionCellID.addContent(CarType);
+		Element MinSpeed = new Element("MinSpeed");
+		MinSpeed.setText(cellDirectionElement.getMinSpeed());
+		CarType.addContent(MinSpeed);
+		
+		Element MaxSpeed = new Element("MaxSpeed");
+		MaxSpeed.setText(cellDirectionElement.getMaxSpeed());
+		CarType.addContent(MaxSpeed);
+		
+		Element AverageSpeed = new Element("AverageSpeed");
+		AverageSpeed.setText(cellDirectionElement.getAverageSpeed());
+		CarType.addContent(AverageSpeed);
 			
-			Element MinSpeed = new Element("MinSpeed");
-			MinSpeed.setText(listSpeed[i][4*j + 2]);
-			CarType.addContent(MinSpeed);
+	}
+	
+	Element DirectionCellID1 = new Element("Direction" + cellID +"B");
+	Cell.addContent(DirectionCellID1);
+	
+	for(CellDirection cellDirectionElement : directionBList) {
 			
-			Element MaxSpeed = new Element("MaxSpeed");
-			MaxSpeed.setText(listSpeed[i][4*j + 3]);
-			CarType.addContent(MaxSpeed);
+		Element CarType = new Element(cellDirectionElement.getCarType());
+		DirectionCellID.addContent(CarType);
+		
+		Element MinSpeed = new Element("MinSpeed");
+		MinSpeed.setText(cellDirectionElement.getMinSpeed());
+		CarType.addContent(MinSpeed);
+		
+		Element MaxSpeed = new Element("MaxSpeed");
+		MaxSpeed.setText(cellDirectionElement.getMaxSpeed());
+		CarType.addContent(MaxSpeed);
+		
+		Element AverageSpeed = new Element("AverageSpeed");
+		AverageSpeed.setText(cellDirectionElement.getAverageSpeed());
+		CarType.addContent(AverageSpeed);
 			
-			Element AverageSpeed = new Element("AverageSpeed");
-			AverageSpeed.setText(listSpeed[i][4*j + 4]);
-			CarType.addContent(AverageSpeed);
-			
-		}
 	}
 	
 	return document;
 	}
 	
 	
-	public static Document createReplyCellStatNet( String cellID , String timeStart , String timeStop, String fcarType, 
+	public static Document createReplyCellStatNet(String requestId, String cellID , String timeStart , String timeStop, String fcarType, 
 	String ftimeStamp, String lcarType, String ltimeStamp, String totalCar, String totalData) {
 	
+	racine = new Element(requestId);
 	Document document = new Document(racine);
 	Element RequestType = new Element("RequestType");
 	RequestType.setText("CellStatNet");

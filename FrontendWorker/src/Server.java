@@ -46,7 +46,7 @@ class Server {
 				e.printStackTrace();
 			}
 	 	}
-			RequestID req = new RequestID("init");
+			RequestID req = new RequestID();
 			try{
 			req.createParse(message);
 			}catch(Exception e3){
