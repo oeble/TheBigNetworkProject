@@ -1,6 +1,5 @@
 import java.io.*;
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.PropertiesCredentials;
 import java.net.*;
 import org.jdom2.*;
 import org.jdom2.output.*;
