@@ -112,6 +112,7 @@ public class RequestID {
 	return document;
 	}
 	
+	//TODO: just ask for a list of cell (provide all the cellID)
 	public static Document createReplyListCell( String cellID , String[] listNeighbourCell) {
 	int i ;
 	
@@ -136,6 +137,7 @@ public class RequestID {
 	return document;
 	}
 	
+	//TODO: I don't understand how to use it.
 	public static Document createReplyCellStatSpeed( String cellID , String timeStart , String timeStop, String[][] listSpeed) {
 	int i,j ; 
 	

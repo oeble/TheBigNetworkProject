@@ -34,6 +34,8 @@ public class DDBReader {
     	if(dynamoDB==null)
     		dynamoDB = new AmazonDynamoDBClient(pawsCredentials);
     	dateFormatter = new SimpleDateFormat("yyyyMMddHHmm");
+    	
+    	//TODO : decide to remove this
         try {
         	
             // Wait for it to become active
