@@ -95,7 +95,7 @@ public class DDBReader {
 			firstTime = dateFormatter.format(new Date(Long.parseLong(firstTime)));
 			}
 			
-			numberofdata += result.getCount();
+			numberofdata += result.getItems().size();
 			
 			if(lastKeyEvaluated == null){
 			lastType = result.getItems().get(result.getCount() - 1).get("carType").getN();
@@ -112,7 +112,7 @@ public class DDBReader {
 		} while (lastKeyEvaluated != null);
 
 		return RequestID.createReplyCellStatNet(reqId, cellid, begin, end, firstType, firstTime, lastType, lastTime,
-				String.valueOf(numberofdata), String.valueOf((rawDataSize / 1024) / 1024));
+				String.valueOf(numberofdata), String.valueOf((rawDataSize / 1024.0) / 1024.0));
 
 	}
 
