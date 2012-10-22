@@ -1,4 +1,8 @@
 import java.io.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.output.Format;
@@ -11,8 +15,8 @@ import com.amazonaws.auth.PropertiesCredentials;
 
 
 class Server {
-
-	
+	private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
+	private static Level level;
 	
 	public static void main(String[] Arg) {
 		
@@ -26,17 +30,61 @@ class Server {
 		S3Access s3 = null;
 		DDBReader ddbRead = null;
 		AWSCredentials credentials = null;
-		File file = new File("src/AwsCredentials.properties");
+		  try{
+	         	 credentials = new PropertiesCredentials(
+	                     Server.class.getResourceAsStream("AwsCredentials.properties"));
+	         	LOGGER.log(Level.SEVERE, "Credentials are file");
+	         }catch(IOException e)
+	         {        	
+	        	 LOGGER.log(Level.SEVERE, "Credentials are wrong");
+	         	System.exit(-1);
+	         }
 		
-		try {
-			credentials = new PropertiesCredentials(file);
-		} catch (IOException e1) {
-			System.out.println("Credentials were not properly entered into AwsCredentials.properties.");
-			System.out.println(e1.getMessage());
-			System.exit(-1);
-		}
-		System.out.println("Credentials are fine!");
 		
+		 if (Arg.length != 1) {
+	            //Level is SEVERE because program cannot continue and will be terminated
+	            LOGGER.log(Level.SEVERE, "Wrong number of arguments");
+	            System.err.print("Usage FrontendWorker logging level = w - WARNING\n d - DEBUG\n i - INFO\n e - ERROR\n n - OFF \n logging output = f - file only");
+	            System.exit(1);
+	        }
+		 
+	        switch (Arg[0]) {
+	            case "w":
+	                level = Level.WARNING;
+	                break;
+	            case "d":
+	                level = Level.ALL;
+	                break;
+	            case "i":
+	                level = Level.INFO;
+	                break;
+	            case "e":
+	                level = Level.SEVERE;
+	                break;
+	            case "n":
+	                level = Level.OFF;
+	                break;
+	            default:
+	                //Level is SEVERE because program cannot continue and will be terminated
+	                LOGGER.log(Level.SEVERE, "Wrong format of second argument!");
+	                System.err.print("Usage ServerSide port [logging level] optional:[loging output]\n logging level = w - WARNING\n d - DEBUG\n i - INFO\n e - ERROR\n n - OFF \n logging output = f - file only");
+	                System.exit(1);
+	                break;
+	        }
+	        LOGGER.setUseParentHandlers(false);
+	        LOGGER.setLevel(level);
+	        ConsoleHandler consoleHandler = new ConsoleHandler();
+            consoleHandler.setLevel(level);           
+            LOGGER.addHandler(consoleHandler);
+            try {
+            	FileHandler logHandler = new FileHandler("FrontendWorker.txt");
+                logHandler.setLevel(level);
+                LOGGER.addHandler(logHandler);
+            } catch (IOException | SecurityException ex) {
+                //Level is WARNING because program will work, but there will be no log file created
+                LOGGER.log(Level.WARNING, "Cant create FileHandler for logger", ex);
+            }
+	        	
 		try {
 		queue = new SQSAccess(credentials);
 		s3 = new S3Access(credentials);
