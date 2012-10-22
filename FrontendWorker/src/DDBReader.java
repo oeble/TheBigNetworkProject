@@ -56,14 +56,14 @@ public class DDBReader {
 			tbegin = dateFormatter.parse(begin).getTime();
 		} catch (ParseException e) {
 
-			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage());
+			return RequestID.createError(reqId, "XMLError", begin, "Impossible to parse this date" + e.getMessage());
 
 		}
 
 		try {
 			tend = dateFormatter.parse(end).getTime();
 		} catch (ParseException e) {
-			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage());
+			return RequestID.createError(reqId, "XMLError", end, "Impossible to parse this date" + e.getMessage());
 		}
 
 	
@@ -133,14 +133,14 @@ public class DDBReader {
 			tbegin = dateFormatter.parse(begin).getTime();
 		} catch (ParseException e) {
 
-			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage());
+			return RequestID.createError(reqId, "XMLError", begin, "Impossible to parse this date" + e.getMessage());
 
 		}
 
 		try {
 			tend = dateFormatter.parse(end).getTime();
 		} catch (ParseException e) {
-			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage());
+			return RequestID.createError(reqId,"XMLError", end, "Impossible to parse this date" + e.getMessage());
 		}
 
 		

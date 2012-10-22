@@ -44,9 +44,11 @@ public class RequestID {
 		System.out.println(racine.getText());
 	}	
 	
-	public static Document createError(String type, String perrorData, String perrorDescription) {
+	public static Document createError(String requestId, String type, String perrorData, String perrorDescription) {
 	
+	racine = new Element(requestId);
 	Document document = new Document(racine);
+	
 	Element error = new Element("error");
 	racine.addContent(error);
 	
@@ -120,12 +122,13 @@ public class RequestID {
 	
 	for(CellDirection cellDirectionElement : directionAList) {
 		
-		//if(cellDirectionElement.getError())
-		//{
-		//	return createError("XMLError", null, "Error preprocessing including false data in XML File");
+		if(cellDirectionElement.getError())
+		{
+			racine = null;
+			return createError(requestId, "XMLError", "", "Error preprocessing including false data in XML File");
 		
 			
-		//}
+		}
 		Element CarType = new Element(String.valueOf( ((char)(Integer.parseInt(cellDirectionElement.getCarType())+64) )));
 		DirectionCellID.addContent(CarType);
 		
