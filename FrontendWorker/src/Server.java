@@ -16,6 +16,7 @@ class Server {
 	
 	public static void main(String[] Arg) {
 		
+
 		String message = null;
 		String requestId, requestType,timeStart,timeStop,cellID,location;
 		String xmlString = null;

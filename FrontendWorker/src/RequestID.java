@@ -119,8 +119,14 @@ public class RequestID {
 	Cell.addContent(DirectionCellID);
 	
 	for(CellDirection cellDirectionElement : directionAList) {
+		
+		//if(cellDirectionElement.getError())
+		//{
+		//	return createError("XMLError", null, "Error preprocessing including false data in XML File");
+		
 			
-		Element CarType = new Element(cellDirectionElement.getCarType());
+		//}
+		Element CarType = new Element(String.valueOf( ((char)(Integer.parseInt(cellDirectionElement.getCarType())+64) )));
 		DirectionCellID.addContent(CarType);
 		
 		Element MinSpeed = new Element("MinSpeed");
