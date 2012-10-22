@@ -16,6 +16,7 @@ class Server {
 	
 	public static void main(String[] Arg) {
 		
+		boolean error = false;
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		String message = null;
 		String requestId, requestType,timeStart,timeStop,cellID,location;
@@ -60,15 +61,17 @@ class Server {
 	 	}
 			RequestID req = new RequestID();
 			try{
-			req.createParse(message);
+				req.createParse(message);
 			}catch(Exception e3){
 				System.out.println("Error parsing XML file");
 				doc = RequestID.createError("RequestIDError", "XMLError", "", "Error parsing XML File received");
-
 				xmlString = outputter.outputString(doc);
 				location = s3.uploadBucket("RequestIDError.xml", new ByteArrayInputStream(xmlString.getBytes()));
 				queue.sendAnswer(location);
+				error = true;
 			}
+			if(!error){
+				
 			
 			requestId = req.getRacine();
 			requestType = req.getType();
@@ -100,6 +103,7 @@ class Server {
 				queue.sendAnswer(location);
 			
 			}
+		}
 		}
 		
 	
