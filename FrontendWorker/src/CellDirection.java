@@ -57,6 +57,11 @@ public class CellDirection {
 	  this.Error = Err;
 	}
 	
+	public boolean getError()
+	{
+	  return this.Error;
+	}
+	
 	
 	
 }
