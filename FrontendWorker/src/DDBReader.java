@@ -112,7 +112,7 @@ public class DDBReader {
 		} while (lastKeyEvaluated != null);
 
 		return RequestID.createReplyCellStatNet(reqId, cellid, begin, end, firstType, firstTime, lastType, lastTime,
-				String.valueOf(numberofdata), String.format("%.5f",String.valueOf((rawDataSize / 1024.0) / 1024.0)));
+				String.valueOf(numberofdata), String.format("%.5f",(rawDataSize / 1024.0) / 1024.0));
 	}
 
 	// list of cells

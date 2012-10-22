@@ -151,7 +151,7 @@ public class RequestID {
 	
 	for(CellDirection cellDirectionElement : directionBList) {
 			
-		Element CarType = new Element(cellDirectionElement.getCarType());
+		Element CarType = new Element(String.valueOf( ((char)(Integer.parseInt(cellDirectionElement.getCarType())+64) )));
 		DirectionCellID.addContent(CarType);
 		
 		Element MinSpeed = new Element("MinSpeed");
