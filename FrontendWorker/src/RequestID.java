@@ -15,19 +15,36 @@ public class RequestID {
 	}
 	
 	public String getType() {
-		return racine.getChild("RequestType").getText();
+		if (racine.getChild("RequestType") == null)
+			return "XMLError";
+		else
+			return racine.getChild("RequestType").getText();
+
 	}
 	
 	public String getTimeStart() {
-		return racine.getChild("TimeStart").getText(); 
+		if (racine.getChild("TimeStart") == null)
+			return null;
+		else
+			return racine.getChild("TimeStart").getText(); 
+		
+		
 	}
 	
 	public String getTimeStop() {
-		return racine.getChild("TimeStop").getText(); 
+		if (racine.getChild("TimeStop") == null)
+			return null;
+		else
+			return racine.getChild("TimeStop").getText(); 
+		
 	}
 	
 	public String getCellID() {
-		return racine.getChild("CellID").getText(); 
+		if (racine.getChild("CellID") == null)
+			return null;
+		else
+			return racine.getChild("CellID").getText();
+		
 	}
 	
 	public void createParse(String message) throws Exception

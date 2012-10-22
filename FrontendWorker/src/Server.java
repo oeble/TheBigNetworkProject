@@ -119,39 +119,45 @@ class Server {
 				error = true;
 			}
 			if(!error){
+				requestId = req.getRacine();
+				requestType = req.getType();
 				
-			
-			requestId = req.getRacine();
-			requestType = req.getType();
-			
-			
-			System.out.println("receive request n° " + requestId + " with type " + requestType );
-			
-			
-			
-	
-				if(requestType.equals("CellStatNet")) {
-					timeStart = req.getTimeStart();
-					timeStop = req.getTimeStop();
-					cellID = req.getCellID();
-					doc = ddbRead.reqCellStatNet(requestId, timeStart, timeStop, cellID);
+				
+				System.out.println("receive request n° " + requestId + " with type " + requestType );
+				
+				
+				
+					if(requestType.equals("XMLError")) {
+						doc = RequestID.createError(requestId, requestType, "", "Error in XML file : Field Missing");
+					}
+					else if(requestType.equals("CellStatNet")) {
+						timeStart = req.getTimeStart();
+						timeStop = req.getTimeStop();
+						cellID = req.getCellID();
+						if (timeStart == null || timeStop == null || cellID == null)
+							doc = RequestID.createError(requestId, requestType, "", "Error in XML file : Field Missing");
+						else
+							doc = ddbRead.reqCellStatNet(requestId, timeStart, timeStop, cellID);
+					}
+					else if (requestType.equals("CellStatSpeed")) {
+						timeStart = req.getTimeStart();
+						timeStop = req.getTimeStop();
+						cellID = req.getCellID();
+						if (timeStart == null || timeStop == null || cellID == null)
+							doc = RequestID.createError(requestId, requestType, "", "Error in XML file : Field Missing");
+						else
+							doc = ddbRead.reqCellStatSpeed(requestId, timeStart, timeStop, cellID);
+					}											
+					else if( requestType.equals("ListCells")) {
+						doc = ddbRead.reqListCells(requestId);
+					}			
+					
+			        xmlString = outputter.outputString(doc);
+					location = s3.uploadBucket(requestId + ".xml", new ByteArrayInputStream(xmlString.getBytes()));
+					queue.sendAnswer(location);
+				
 				}
-				else if (requestType.equals("CellStatSpeed")) {
-					timeStart = req.getTimeStart();
-					timeStop = req.getTimeStop();
-					cellID = req.getCellID();
-					doc = ddbRead.reqCellStatSpeed(requestId, timeStart, timeStop, cellID);
-				}											
-				else if( requestType.equals("ListCells")) {
-					doc = ddbRead.reqListCells(requestId);
-				}			
-				
-		        xmlString = outputter.outputString(doc);
-				location = s3.uploadBucket(requestId + ".xml", new ByteArrayInputStream(xmlString.getBytes()));
-				queue.sendAnswer(location);
-			
 			}
-		}
 		}
 		
 	
