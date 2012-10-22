@@ -22,7 +22,7 @@ public class SQSAccess {
 	private static final String SQS_IN_NAME =  "12_LP1_SQS_D7001D_group5_in";
 	private static final String SQS_OUT_NAME = "12_LP1_SQS_D7001D_group5_out";
 	
-	private static final Logger LOGGER = Logger.getLogger(SQSAccess.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 
 	static AmazonSQS sqs = null;
 	
