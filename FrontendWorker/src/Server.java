@@ -49,7 +49,7 @@ class Server {
 		
 		while (true) {
 		message = null;
-	 	
+	 	error = false;
 		while(message == null)
 	 	{
 			message = queue.getXML();
