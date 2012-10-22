@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jdom2.Document;
+
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodb.model.AttributeValue;
@@ -44,7 +46,7 @@ public class DDBReader {
 	// last car type + timestamp
 	// total number of car
 	// number of rawdata in MB
-	public String reqCellStatNet(String reqId, String begin, String end, String cellid) {
+	public Document reqCellStatNet(String reqId, String begin, String end, String cellid) {
 
 		// Dealing with date formating
 		Long tbegin;
@@ -54,14 +56,15 @@ public class DDBReader {
 		try {
 			tbegin = dateFormatter.parse(begin).getTime();
 		} catch (ParseException e) {
-			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage())
-					.toString();
+
+			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage());
+
 		}
 
 		try {
 			tend = dateFormatter.parse(end).getTime();
 		} catch (ParseException e) {
-			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage()).toString();
+			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage());
 		}
 
 		// Making request
@@ -109,11 +112,12 @@ public class DDBReader {
 		} while (lastKeyEvaluated != null);
 
 		return RequestID.createReplyCellStatNet(reqId, cellid, begin, end, firstType, firstTime, lastType, lastTime,
-				String.valueOf(numberofdata), String.valueOf((rawDataSize / 1024) / 1024)).toString();
+				String.valueOf(numberofdata), String.valueOf((rawDataSize / 1024) / 1024));
+
 	}
 
 	// list of cells
-	public String reqListCells(String reqId) {
+	public Document reqListCells(String reqId) {
 
 		// hack for the cellIds
 		List<String> cellIdsList = new LinkedList<String>();
@@ -131,11 +135,11 @@ public class DDBReader {
 			lastKeyEvaluated = result.getLastEvaluatedKey();
 		} while (lastKeyEvaluated != null);
 
-		return RequestID.createReplyListCell(reqId, cellIdsList).toString();
+		return RequestID.createReplyListCell(reqId, cellIdsList);
 	}
 
 	// all the informations in the range
-	public String reqCellStatSpeed(String reqId, String begin, String end, String cellid) {
+	public Document reqCellStatSpeed(String reqId, String begin, String end, String cellid) {
 
 		// Dealing with date formating
 		Long tbegin;
@@ -145,14 +149,15 @@ public class DDBReader {
 		try {
 			tbegin = dateFormatter.parse(begin).getTime();
 		} catch (ParseException e) {
-			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage())
-					.toString();
+
+			return RequestID.createError("XMLError", begin, "Impossible to parse this date" + e.getMessage());
+
 		}
 
 		try {
 			tend = dateFormatter.parse(end).getTime();
 		} catch (ParseException e) {
-			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage()).toString();
+			return RequestID.createError("XMLError", end, "Impossible to parse this date" + e.getMessage());
 		}
 
 		// Making request
@@ -198,7 +203,8 @@ public class DDBReader {
 		new ProcessAll(toCompute2);
 		new ProcessAll(toCompute1);
 
-		return RequestID.createReplyCellStatSpeed(reqId, cellid, begin, end, toCompute1, toCompute2).toString();
+		return RequestID.createReplyCellStatSpeed(reqId, cellid, begin, end, toCompute1, toCompute2);
+
 	}
 
 }
