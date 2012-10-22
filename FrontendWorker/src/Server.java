@@ -16,7 +16,8 @@ class Server {
 	
 	public static void main(String[] Arg) {
 		
-
+		boolean error = false;
+		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		String message = null;
 		String requestId, requestType,timeStart,timeStop,cellID,location;
 		String xmlString = null;
@@ -48,7 +49,7 @@ class Server {
 		
 		while (true) {
 		message = null;
-	 	
+	 	error = false;
 		while(message == null)
 	 	{
 			message = queue.getXML();
@@ -60,38 +61,49 @@ class Server {
 	 	}
 			RequestID req = new RequestID();
 			try{
-			req.createParse(message);
+				req.createParse(message);
 			}catch(Exception e3){
 				System.out.println("Error parsing XML file");
+				doc = RequestID.createError("RequestIDError", "XMLError", "", "Error parsing XML File received");
+				xmlString = outputter.outputString(doc);
+				location = s3.uploadBucket("RequestIDError.xml", new ByteArrayInputStream(xmlString.getBytes()));
+				queue.sendAnswer(location);
+				error = true;
 			}
+			if(!error){
+				
 			
 			requestId = req.getRacine();
 			requestType = req.getType();
-			timeStart = req.getTimeStart();
-			timeStop = req.getTimeStop();
-			cellID = req.getCellID();
+			
 			
 			System.out.println("receive request n° " + requestId + " with type " + requestType );
-			System.out.println("TimeStart " + timeStart + " timeStop " + timeStop + " cellID " + cellID + "\n");
+			
 			
 			
 	
 				if(requestType.equals("CellStatNet")) {
+					timeStart = req.getTimeStart();
+					timeStop = req.getTimeStop();
+					cellID = req.getCellID();
 					doc = ddbRead.reqCellStatNet(requestId, timeStart, timeStop, cellID);
 				}
 				else if (requestType.equals("CellStatSpeed")) {
-					
+					timeStart = req.getTimeStart();
+					timeStop = req.getTimeStop();
+					cellID = req.getCellID();
 					doc = ddbRead.reqCellStatSpeed(requestId, timeStart, timeStop, cellID);
 				}											
 				else if( requestType.equals("ListCells")) {
 					doc = ddbRead.reqListCells(requestId);
 				}			
-				XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+				
 		        xmlString = outputter.outputString(doc);
 				location = s3.uploadBucket(requestId + ".xml", new ByteArrayInputStream(xmlString.getBytes()));
 				queue.sendAnswer(location);
 			
 			}
+		}
 		}
 		
 	
