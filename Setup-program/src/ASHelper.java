@@ -86,7 +86,7 @@ public class ASHelper {
 
 	public void CreateASG(String AutoScalingGroupName,
 			String LaunchConfigurationName, int minSize, int maxSize,
-			String loadBalancerName) {
+			String loadBalancerName, String tagName) {
 		System.out.println("Creating auto scale group...");
 		CreateAutoScalingGroupRequest ASReq = new CreateAutoScalingGroupRequest();
 		ASReq.setAutoScalingGroupName(AutoScalingGroupName);
@@ -107,7 +107,7 @@ public class ASHelper {
 		tag.setKey("Group5");
 		nameTag.setKey("Name");
 		tag.setValue("Yes");
-		nameTag.setValue("12_LP1_EC2_D7001D_group5_preprocessing");
+		nameTag.setValue(tagName);
 		tag.setPropagateAtLaunch(true);
 		nameTag.setPropagateAtLaunch(true);
 		tags.add(tag);

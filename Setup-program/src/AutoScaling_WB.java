@@ -28,9 +28,10 @@ public class AutoScaling_WB {
 	private static final boolean USE_ELB = true;
 	private static final int MIN_SIZE = 2;
 	private static final int MAX_SIZE = 3;
-	private static final String AUTO_SCALING_GROUP_NAME = "12_LP1_ASG_D7001D_group5_BF";
-	private static final String LAUNCH_CONFIGURATION_NAME = "12_LP1_ASLC_D7001D_group5_BF";
-	private static final String AMI_ID = "ami-8b9e9eff";
+	private static final String AUTO_SCALING_GROUP_NAME = "12_LP1_ASG_D7001D_group5_WB";
+	private static final String LAUNCH_CONFIGURATION_NAME = "12_LP1_ASLC_D7001D_group5_WB";
+	private static final String TAG_NAME ="12_LP1_EC2_D7001D_group5_preprocessing";
+	private static final String AMI_ID = "ami-4ba4a43f";
 	private static final String SEC_GROUP_NAME = "12_LP1_SEC_D7001D_group5";
 	private static final String KEY_PAIR_NAME = "12_LP1_KEY_D7001D_group5";
 	private static final String INSTANCE_TYPE = "c1.medium";
@@ -108,7 +109,7 @@ public class AutoScaling_WB {
 			// Create autoscaling Group
 			asHelper.CreateASG(AUTO_SCALING_GROUP_NAME,
 					LAUNCH_CONFIGURATION_NAME, MIN_SIZE, MAX_SIZE,
-					(USE_ELB) ? ELB_NAME : "");
+					(USE_ELB) ? ELB_NAME : "",TAG_NAME);
 		}
 
 		// Print information about created group

@@ -6,8 +6,8 @@ import com.amazonaws.auth.PropertiesCredentials;
 public class ProjectLauncher {
 	
 	public static final boolean START_AUTO_SCALING_WB = false;
-	public static final boolean START_AUTO_SCALING_BF = false;
-	public static final boolean START_SQS = true;
+	public static final boolean START_AUTO_SCALING_BF = true;
+	public static final boolean START_SQS = false;
 	public static final boolean START_S3 = false;
 	public static final boolean START_DYNAMO_DB = false;
 
@@ -31,7 +31,7 @@ public class ProjectLauncher {
 		System.out.println("Credentials are fine!");
 		
 		
-		 new DynamoDbLauncher(credentials,TODO_DYNAMODB);
+		 
 	     if(START_AUTO_SCALING_WB)
 		 new AutoScaling_WB(credentials);
 	     if(START_AUTO_SCALING_BF)

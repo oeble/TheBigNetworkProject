@@ -16,8 +16,9 @@ public class Storage3 {
 		s3 = new AmazonS3Client(pawsCredentials);
 		try {
             //Creating bucket
-            System.out.println("Creating bucket " + BUCKET_NAME + "\n");
+            System.out.println("Creating bucket " + BUCKET_NAME);
             s3.createBucket(BUCKET_NAME, Region.EU_Ireland);
+            System.out.println("bucket " + BUCKET_NAME + " created");
         
         } catch (AmazonServiceException ase) {
             System.out.println("Caught an AmazonServiceException, which means your request made it "
