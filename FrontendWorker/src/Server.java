@@ -150,7 +150,11 @@ class Server {
 					}											
 					else if( requestType.equals("ListCells")) {
 						doc = ddbRead.reqListCells(requestId);
-					}			
+					}
+					else
+					{
+						doc = RequestID.createError(requestId, requestType, "", "Error in XML file : Request Type does not exist");
+					}
 					
 			        xmlString = outputter.outputString(doc);
 					location = s3.uploadBucket(requestId + ".xml", new ByteArrayInputStream(xmlString.getBytes()));
